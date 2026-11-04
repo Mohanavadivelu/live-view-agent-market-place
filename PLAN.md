@@ -5,7 +5,7 @@ Agents and skills that test Android use cases through **appium-mcp** (from
 find the issue in the logs and the code, fix it, build, **adb push** it to the device and verify it.
 Installable as plugins in **Claude Code**, **VS Code** (Copilot chat) and **Copilot CLI / the Copilot app**.
 
-Status: S0 done (the skeleton installs in Claude Code); S1 next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
+Status: S0 and S1 done; S2 (the test bench) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
 
 ## Decisions so far
 
@@ -85,11 +85,11 @@ Done when: Claude Code (`/plugin marketplace add` + `/plugin install`) and VS Co
 
 ### S1. live-view-mcp: connect and check
 
-- [ ] `plugins/live-view-mcp/.mcp.json`: `appium` → `http://127.0.0.1:8000/mcp`
-- [ ] find out the names plugin MCP tools get in Claude Code and VS Code (namespacing); write it down in `docs/writing-agents.md`
-- [ ] `agents/env-doctor.md`: appium-mcp reachable, device online (`select_device`), Appium driver, screen awake, adb root possible
-- [ ] `skills/device-safety/SKILL.md`: allowed serials, no factory reset / wipe, back up before push, one run per device
-- [ ] `commands/check-setup.md`: `/check-setup` runs env-doctor and says what to fix
+- [x] `plugins/live-view-mcp/.mcp.json`: `appium` → `http://127.0.0.1:8000/mcp`
+- [x] find out the names plugin MCP tools get in Claude Code and VS Code (namespacing); write it down in `docs/writing-agents.md`
+- [x] `agents/env-doctor.md`: appium-mcp reachable, device online (`select_device`), Appium driver, screen awake, adb root possible
+- [x] `skills/device-safety/SKILL.md`: allowed serials, no factory reset / wipe, back up before push, one run per device
+- [x] `commands/check-setup.md`: `/check-setup` runs env-doctor and says what to fix
 
 Done when: `/check-setup` reports the emulator and appium-mcp correctly in Claude Code and VS Code, and says clearly when appium-mcp isn't running.
 
@@ -166,7 +166,7 @@ Done when: Copilot CLI installs the plugins from `copilot/` and `/run-usecase` (
 
 ## Open questions
 
-- [ ] The exact name of plugin MCP tools in Claude Code and VS Code (S1).
+- [x] The name of plugin MCP tools: Claude Code `mcp__plugin_live-view-mcp_appium__<tool>` (see docs/writing-agents.md). VS Code's is still to check.
 - [ ] The Copilot marketplace manifest path (GitHub's docs don't name it yet) (S8).
 - [ ] May S6 download the Google APIs x86_64 system image (~1.5 GB) and create a second emulator for system push?
 - [ ] Which JDK builds the test bench (no `java` on PATH; Android Studio's bundled JDK by default)?

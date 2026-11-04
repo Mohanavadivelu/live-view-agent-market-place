@@ -12,8 +12,8 @@
     {
       "name": "live-view-mcp",
       "source": "./plugins/live-view-mcp",
-      "description": "Connects to appium-mcp (live-view-app → Tools → appium-mcp) and checks the setup: device, Appium, adb root.",
-      "version": "0.0.1",
+      "description": "Connects appium-mcp (live-view-app → Tools → appium-mcp) and checks the setup with /check-setup: the device, Appium, and whether system push is possible. The device-safety rules every plugin follows.",
+      "version": "0.0.2",
       "author": {
         "name": "Mohana Vadivelu"
       },
