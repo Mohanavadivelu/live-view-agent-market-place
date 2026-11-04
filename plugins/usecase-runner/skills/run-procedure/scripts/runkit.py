@@ -4,6 +4,7 @@
     python runkit.py adb <serial> <adb arguments…>       adb -s <serial> …, found without PATH
     python runkit.py seq <serial> "tap X Y" "wait 2" "key BACK" …  a timed sequence in one adb call
     python runkit.py wait <seconds>
+    python runkit.py since <run folder>                  seconds since the run started (for since_seconds)
     python runkit.py collect <run folder> <file> [<name>]  copy a file (from anywhere) into the run
     python runkit.py restore <run folder>                Bluetooth / Wi-Fi / airplane as in device.json
     python runkit.py finish <run folder>                 check the files, release the lock
@@ -141,14 +142,17 @@ def start(usecase, serial_arg):
                           "getprop ro.build.version.sdk; getprop ro.build.type").splitlines() + [""] * 4
     settings = shell(serial, "settings get global bluetooth_on; settings get global wifi_on; "
                              "settings get global airplane_mode_on").splitlines() + [""] * 3
-    version = None
+    version = updated = None
     if package:
-        m = re.search(r"versionName=(\S+)", shell(serial, f"dumpsys package {package}"))
+        info = shell(serial, f"dumpsys package {package}")
+        m = re.search(r"versionName=(\S+)", info)
         version = m.group(1) if m else None
+        m = re.search(r"lastUpdateTime=(.+)", info)  # changes on every install: tells builds apart
+        updated = m.group(1).strip() if m else None
     device = {
         "serial": serial, "model": props[0], "android": props[1], "sdk": props[2], "build_type": props[3],
         "bluetooth_on": settings[0], "wifi_on": settings[1], "airplane_mode_on": settings[2],
-        "package": package, "app_version": version,
+        "package": package, "app_version": version, "app_updated": updated,
         "host_time": now(), "device_time": shell(serial, "date +%Y-%m-%dT%H:%M:%S.%3N%z"),
     }
     (run / "device.json").write_text(json.dumps(device, indent=2) + "\n", encoding="utf-8")
@@ -201,6 +205,12 @@ def collect(run, src, name=None):
     out({"copied": dest.relative_to(ROOT).as_posix(), "bytes": dest.stat().st_size})
 
 
+def since(run):
+    started = datetime.fromisoformat(json.loads((run_folder(run) / "device.json").read_text(encoding="utf-8"))["host_time"])
+    seconds = (datetime.now().astimezone() - started).total_seconds()
+    out({"since_seconds": max(1, int(seconds) + 1), "started": started.isoformat()})
+
+
 def restore(run):
     saved = json.loads((run_folder(run) / "device.json").read_text(encoding="utf-8"))
     serial = saved["serial"]
@@ -236,7 +246,7 @@ def finish(run):
 
 def main(argv):
     if not argv:
-        fail("usage: runkit.py start|adb|wait|collect|restore|finish …")
+        fail("usage: runkit.py start|adb|seq|wait|since|collect|restore|finish …")
     cmd, args = argv[0], argv[1:]
     if cmd == "start" and args:
         serial = args[args.index("--serial") + 1] if "--serial" in args else None
@@ -253,6 +263,8 @@ def main(argv):
         return out({"waited_s": float(args[0])})
     if cmd == "collect" and len(args) in (2, 3):
         return collect(*args)
+    if cmd == "since" and len(args) == 1:
+        return since(args[0])
     if cmd == "restore" and len(args) == 1:
         return restore(args[0])
     if cmd == "finish" and len(args) == 1:

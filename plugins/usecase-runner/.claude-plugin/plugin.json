@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "usecase-runner",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Runs a plain-text use case (\"disable BT / launch pairing screen\") on the device, recording logcat and the screen.",
   "author": {
     "name": "Mohana Vadivelu"

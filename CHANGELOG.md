@@ -38,4 +38,15 @@ All notable changes to the live-view-agents marketplace are documented here. The
   Bluetooth / Wi-Fi / airplane mode). The 7 test bench use cases each fail on their planted bug.
   `validate.py`: a command and a skill may not share a name. `projects/lv-testbench.json`: fixed
   an invalid JAVA_HOME escape.
+- S4, log-triage 0.0.2, fix-loop 0.0.2 and usecase-runner 0.0.3: the **log-triage** agent and
+  **/triage-run** read a run folder and write `triage.md` and `triage.json`: what failed, the
+  class (crash, native-crash, anr, flaky, error-dialog, slow, timeout, wrong-screen, log-only,
+  environment, pass), whose code it is, the reproduction rate and the evidence. The
+  **logcat-triage** skill, with **triagekit.py** (`scan`: crash, ANR and native-crash signatures,
+  the app's pids, errors and timings, runs to compare → `signals.json`; `check`: triage.json).
+  fix-loop's **reporter** agent and **bug-report** skill write `bug-report.md`, and
+  **/report-usecase** runs a use case, triages it and writes the report (installs usecase-runner
+  and log-triage with it). Use cases can say `repeat: N`; device.json records the app's install
+  time; `runkit since`. `eval/score.py` scores triage against the answer key: 7/7 on the test
+  bench.
 

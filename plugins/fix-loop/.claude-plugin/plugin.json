@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "fix-loop",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The whole loop: run the use case, triage, fix (Gate 1), build, push (Gate 2), verify, report.",
   "author": {
     "name": "Mohana Vadivelu"
@@ -12,5 +12,9 @@
     "automation",
     "testing",
     "android"
+  ],
+  "dependencies": [
+    "usecase-runner",
+    "log-triage"
   ]
 }

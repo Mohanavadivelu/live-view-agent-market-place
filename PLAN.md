@@ -5,7 +5,7 @@ Agents and skills that test Android use cases through **appium-mcp** (from
 find the issue in the logs and the code, fix it, build, **adb push** it to the device and verify it.
 Installable as plugins in **Claude Code**, **VS Code** (Copilot chat) and **Copilot CLI / the Copilot app**.
 
-Status: S0–S3 done; S4 (log-triage) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
+Status: S0–S4 done; S5 (code-fix) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
 
 ## Decisions so far
 
@@ -33,7 +33,7 @@ use case ─► Runner ─► Triage ─┬─ pass ─────────�
 - **Gate 2** (before pushing): the build result, each file → device path, the backup taken, the
   restart method, the device. Push · Push and reboot · Stop.
 - **Run folder** per use case: `runs/<date>-<case>/` with logcat.log, screen.mp4, step screenshots,
-  steps.json (the actions as replayed), triage.md, fix.diff, backup/, report.md.
+  steps.json (the actions as replayed), triage.md, fix.diff, backup/, bug-report.md.
 
 ## What each tool reads
 
@@ -145,12 +145,29 @@ Found while building it:
 
 ### S4. log-triage + a first report
 
-- [ ] `skills/logcat-triage/SKILL.md`: signatures (FATAL EXCEPTION, ANR in, tombstone/SIGSEGV, watchdog, "has died", Binder/DeadObject), owner by package/pid/tag, the time window around the failed step
-- [ ] `agents/log-triage.md`: class (crash / ANR / native crash / error dialog / wrong screen / timeout / flaky / environment), owning module, "our code?", the evidence → `triage.md`
-- [ ] `plugins/fix-loop/agents/reporter.md` + `skills/bug-report/SKILL.md` (report only, no fix yet)
-- [ ] `eval/score.py` (classification part)
+- [x] `skills/logcat-triage/SKILL.md`: signatures (FATAL EXCEPTION, ANR in, tombstone/SIGSEGV, watchdog, "has died", Binder/DeadObject), owner by package/pid/tag, the time window around the failed step
+- [x] `agents/log-triage.md`: class (crash / ANR / native crash / error dialog / wrong screen / timeout / flaky / environment), owning module, "our code?", the evidence → `triage.md`
+- [x] `plugins/fix-loop/agents/reporter.md` + `skills/bug-report/SKILL.md` (report only, no fix yet)
+- [x] `eval/score.py` (classification part)
 
 Done when: triage classifies all 7 test bench bugs correctly and writes a readable report for each ("run it and tell me what broke" works).
+- [x] `skills/logcat-triage/scripts/triagekit.py`: `scan` (signatures, the app's pids, errors and timings, comparable runs → signals.json), `check` (triage.json)
+- [x] `commands/triage-run.md` (log-triage) and `commands/report-usecase.md` (fix-loop): run (N times for `repeat: N`), triage, report
+
+Found while building it:
+
+- A subagent can't write `report.md` or `summary.md` (Claude Code refuses it), so the report is
+  `bug-report.md`.
+- Flaky needs several runs on the same build: use cases say `repeat: N`, and device.json records
+  the app's install time so that runs on another build aren't compared.
+- Triage reached for `python -c` and chained shell commands to reason about the log; those need
+  approvals, so it is told to use Read and Grep only.
+- The runner can't tell the time (`date` needs approval) and guessed `since_seconds 60`:
+  `runkit since <run>` gives it.
+- Result: `eval/score.py` gives class 7/7, ours 7/7, reports 7/7. 07 ran 5 times with
+  `/report-usecase`: 4 fails, 1 pass, so it was classed flaky. The others were triaged from their
+  S3 runs, plus a fresh end-to-end run of 03. Triage costs about $0.8, a triage and report together
+  about $1.1–1.6, and 07's five runs with triage and report $6.2.
 
 ### S5. code-fix: root cause and Gate 1
 

@@ -23,6 +23,10 @@ when to use it**. `python scripts/validate.py` checks all of this. CI runs it.
 - **Dependencies:** `"dependencies": ["live-view-mcp"]` in plugin.json installs and enables
   live-view-mcp with the plugin (`+ 1 dependency`).
 - **Scripts** live in a skill's folder and are called as `python "${CLAUDE_SKILL_DIR}/scripts/<x>.py"`.
+- **A chain of agents is a command.** A subagent can't start another one, so `/report-usecase`
+  (runner, then log-triage, then reporter) is a command that uses each agent in turn.
+- **A subagent can't write `report.md`, `REPORT.md` or `summary.md`.** Claude Code refuses the Write
+  ("Subagents should return findings as text"). Other names work, so the report is `bug-report.md`.
 
 ## appium-mcp's tools: name them by their short name
 

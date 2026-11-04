@@ -12,7 +12,7 @@
     {
       "name": "live-view-mcp",
       "source": "./plugins/live-view-mcp",
-      "description": "Connects appium-mcp (live-view-app → Tools → appium-mcp) and checks the setup with /check-setup: the device, Appium, and whether system push is possible. The device-safety rules every plugin follows.",
+      "description": "Connects appium-mcp (live-view-app \u2192 Tools \u2192 appium-mcp) and checks the setup with /check-setup: the device, Appium, and whether system push is possible. The device-safety rules every plugin follows.",
       "version": "0.0.2",
       "author": {
         "name": "Mohana Vadivelu"
@@ -27,7 +27,7 @@
       "name": "usecase-runner",
       "source": "./plugins/usecase-runner",
       "description": "Runs a plain-text use case (\"disable BT / launch pairing screen\") on the device, recording logcat and the screen.",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "author": {
         "name": "Mohana Vadivelu"
       },
@@ -41,7 +41,7 @@
       "name": "log-triage",
       "source": "./plugins/log-triage",
       "description": "Reads a run's logcat, crashes and ANRs: what failed, what kind of failure, and whose code it is.",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "author": {
         "name": "Mohana Vadivelu"
       },
@@ -85,7 +85,7 @@
       "name": "fix-loop",
       "source": "./plugins/fix-loop",
       "description": "The whole loop: run the use case, triage, fix (Gate 1), build, push (Gate 2), verify, report.",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "author": {
         "name": "Mohana Vadivelu"
       },

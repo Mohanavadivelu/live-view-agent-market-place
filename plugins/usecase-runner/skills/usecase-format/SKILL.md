@@ -20,6 +20,9 @@ expect: within 15 s the status shows "Found Pixel Buds Pro"
 - `project: <name>` (optional) names `projects/<name>.json`. It gives the app's package, its
   screens, how to build and push, and the device. Without it, use the project the user named, or
   the only file in `projects/`. If there is none, ask once for the app's package.
+- `repeat: N` (optional) says the use case doesn't fail every time: it is run N times, each run
+  with its own folder. The runner still does one run per call. Whoever calls it (`/run-usecase`,
+  `/report-usecase`) calls it N times, and log-triage compares the runs.
 - `expect: …` is a check, made at that point of the run. Everything else is an action.
 - Quoted text is shown on screen as it is written, though case may differ ("Scan" matches a SCAN
   button).

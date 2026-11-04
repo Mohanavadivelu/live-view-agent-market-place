@@ -4,7 +4,7 @@ Runs a plain-text use case ("disable BT / launch the pairing screen / expect …
 device through appium-mcp. It records logcat and the screen, takes a screenshot per step, checks
 each `expect:` line, and leaves a run folder that log-triage (and you) can work from.
 
-Part of the [live-view-agents](../../README.md) marketplace. **Status: S3** (see
+Part of the [live-view-agents](../../README.md) marketplace. **Status: S3** (`repeat:` from S4) (see
 [PLAN.md](../../PLAN.md)). Installing it also installs **live-view-mcp** (the appium-mcp connection
 and the device-safety rules).
 
@@ -35,14 +35,15 @@ expect: within 15 s the status shows "Found Pixel Buds Pro"
 ```
 
 `project:` names `projects/<name>.json`: the app's package and screens, and the device.
+`repeat: N` is for a use case that doesn't fail every time: `/run-usecase` runs it N times.
 
 ## The run folder
 
 `runs/<yyyymmdd-hhmmss>-<use case>/` holds the following:
 
 - `usecase.txt`
-- `device.json`: the device, and Bluetooth, Wi-Fi and airplane mode before the run, which are put
-  back after it
+- `device.json`: the device, the app's version and install time, and Bluetooth, Wi-Fi and
+  airplane mode before the run, which are put back after it
 - `NN-<step>.png`: a screenshot per step
 - `screen.mp4`
 - `logcat.log`

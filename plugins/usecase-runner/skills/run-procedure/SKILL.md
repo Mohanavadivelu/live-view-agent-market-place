@@ -29,6 +29,7 @@ adb's output).
 | `adb <serial> <args…>` | adb for anything appium-mcp's safe mode refuses (`shell cmd …`, `shell pm clear …`). adb doesn't need to be on PATH, and device paths survive Git Bash |
 | `seq <serial> "tap X Y" "wait 2" …` | a timed sequence in one adb call, timed on the device (see usecase-format). It prints each item's device time |
 | `wait <seconds>` | waits on the host |
+| `since <run>` | the seconds since the run started: use it for every `since_seconds` |
 | `collect <run> <file> [<name>]` | copies a file into the run folder: screenshots, the screen recording, logcat, crash reports. **appium-mcp saves its files outside the workspace: always bring them in with collect**, not with cp or Copy-Item |
 | `restore <run>` | puts Bluetooth, Wi-Fi and airplane mode back as `device.json` has them |
 | `finish <run>` | lists the run files still missing and releases the lock |
@@ -42,9 +43,9 @@ adb's output).
 3. **Session.** `appium_session_management` `list`, and use an open session on this device. Else
    `create` one with its `udid`. Remember whether you created it.
 4. **Recordings.** `adb_logcat` `start_recording` with `clear_first: true`, then
-   `appium_screen_recording` `start` with `time_limit_seconds` 600. Note the time: "since the run
-   started" counts from here. Every `since_seconds` is the time since then, never more, and anything
-   logged or recorded before it belongs to an earlier run.
+   `appium_screen_recording` `start` with `time_limit_seconds` 600. "Since the run started" counts
+   from here. Every `since_seconds` is what `runkit since <run>` prints at that moment, never a
+   guess, and anything logged or recorded before the start belongs to an earlier run.
 5. **A known start.** `adb_app` `force_stop` the project's app, so nothing from an earlier run
    (an open screen, a dialog) is still there.
 6. For a **replay**, read `replay_from`.
