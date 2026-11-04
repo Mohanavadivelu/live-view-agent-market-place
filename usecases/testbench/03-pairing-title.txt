@@ -1,4 +1,5 @@
 # The pairing screen's title
+project: lv-testbench
 enable BT
 launch the pairing screen
 expect: the title is "Pair new device"

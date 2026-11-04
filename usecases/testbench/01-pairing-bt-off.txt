@@ -1,4 +1,5 @@
 # Pairing with Bluetooth off
+project: lv-testbench
 disable BT
 launch LV Test Bench
 tap "Pair a device"

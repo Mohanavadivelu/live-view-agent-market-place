@@ -28,4 +28,14 @@ All notable changes to the live-view-agents marketplace are documented here. The
   `adb push` + `pm install`); the answer key `eval/answers/testbench.json`, written by
   `eval/make_answers.py` from the code; `testbench/reset-bugs.ps1`. Each use case was done by hand
   through appium-mcp on the Android 17 emulator and showed its bug.
+- S3, usecase-runner 0.0.2 (installs live-view-mcp with it): **/run-usecase** and the
+  **usecase-runner** agent run a plain-text use case unattended and leave
+  `runs/<time>-<name>/` (screenshots, screen.mp4, logcat.log, crash reports, device.json,
+  steps.json, result.json with the verdict and each check's evidence); a rerun of an unchanged use
+  case replays steps.json. Skills **usecase-format** (the format, phrases, checks, steps.json) and
+  **run-procedure** with **runkit.py** (run folder, device lock, adb beyond appium-mcp's safe mode,
+  timed sequences of taps and waits in one adb call, collecting appium-mcp's files, restoring
+  Bluetooth / Wi-Fi / airplane mode). The 7 test bench use cases each fail on their planted bug.
+  `validate.py`: a command and a skill may not share a name. `projects/lv-testbench.json`: fixed
+  an invalid JAVA_HOME escape.
 

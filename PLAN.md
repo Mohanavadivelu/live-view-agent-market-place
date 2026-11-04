@@ -5,7 +5,7 @@ Agents and skills that test Android use cases through **appium-mcp** (from
 find the issue in the logs and the code, fix it, build, **adb push** it to the device and verify it.
 Installable as plugins in **Claude Code**, **VS Code** (Copilot chat) and **Copilot CLI / the Copilot app**.
 
-Status: S0, S1 and S2 done; S3 (usecase-runner) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
+Status: S0–S3 done; S4 (log-triage) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
 
 ## Decisions so far
 
@@ -52,7 +52,7 @@ they name MCP tools: `scripts/build-copilot.py` converts them.
 .claude-plugin/marketplace.json   the catalog (Claude Code + VS Code)
 plugins/
   live-view-mcp/      appium-mcp connection (.mcp.json), env-doctor, device-safety, /check-setup
-  usecase-runner/     usecase-runner, usecase-format, run-usecase, /run-usecase
+  usecase-runner/     usecase-runner, usecase-format, run-procedure, /run-usecase
   log-triage/         log-triage, logcat-triage
   code-fix/           code-investigator (read-only), fixer, stack-to-source
   build-push/         builder, pusher, project-config, build-module, adb-push-deploy
@@ -121,12 +121,27 @@ Found while building it (for the later stages):
 
 ### S3. usecase-runner: run a plain-text use case
 
-- [ ] `skills/usecase-format/SKILL.md`: the plain-text rules, `expect:`, common phrases ("disable BT", "launch X screen") and how they're done, the `steps.json` replay format
-- [ ] `skills/run-usecase/SKILL.md`: preconditions, logcat recording + screen recording, screenshot per step, error-dialog check, the run folder
-- [ ] `agents/usecase-runner.md`: interprets lines (first run) or replays `steps.json` (reruns); falls back to interpreting when the screen changed
-- [ ] `commands/run-usecase.md`: `/run-usecase <file>`
+- [x] `skills/usecase-format/SKILL.md`: the plain-text rules, `expect:`, common phrases ("disable BT", "launch X screen") and how they're done, the `steps.json` replay format
+- [x] `skills/run-procedure/SKILL.md`: preconditions, logcat recording + screen recording, screenshot per step, error-dialog check, the run folder
+- [x] `agents/usecase-runner.md`: interprets lines (first run) or replays `steps.json` (reruns); falls back to interpreting when the screen changed
+- [x] `commands/run-usecase.md`: `/run-usecase <file>`
 
 Done when: the 7 test bench use cases run unattended, each leaving a complete run folder, and a rerun replays `steps.json`.
+- [x] `skills/run-procedure/scripts/runkit.py`: run folder, lock, device state, adb beyond safe mode, timed sequences, collecting appium-mcp's files
+
+Found while building it:
+
+- A command is a skill too: a command and a skill with the same name clash (validate.py checks it).
+- Unattended runs can't chain shell commands or copy out of appium-mcp's work folder (outside the
+  workspace), so the mechanics are one script (`runkit.py`) and one permission
+  (`Bash(python *runkit.py*)`).
+- Tool calls take seconds: `tap / wait 2 s / tap` done call by call puts 8 s between the taps.
+  Taps, keys and waits in a row run as one `runkit seq` (one adb shell, timed on the device).
+- Taps go through `input tap`: Appium's own taps wait for the app to be idle, which hides ANRs.
+- Launches are cold starts (force stop, then start): a resumed task shows where an earlier run
+  left the app.
+- A run costs about $0.7–1.1 and 1–2.5 minutes. All 7 use cases fail on their bug, unattended,
+  with complete run folders, and a rerun of 02 replays steps.json.
 
 ### S4. log-triage + a first report
 

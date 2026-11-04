@@ -1,4 +1,5 @@
 # Scanning for devices nearby
+project: lv-testbench
 enable BT
 launch the pairing screen
 tap "Scan"

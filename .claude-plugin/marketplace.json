@@ -27,7 +27,7 @@
       "name": "usecase-runner",
       "source": "./plugins/usecase-runner",
       "description": "Runs a plain-text use case (\"disable BT / launch pairing screen\") on the device, recording logcat and the screen.",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "author": {
         "name": "Mohana Vadivelu"
       },

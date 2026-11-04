@@ -85,6 +85,10 @@ def check_plugin(folder: Path, listed: dict) -> None:
                 bad(md, "no description")
             if kind == "agents" and fm.get("name") != md.stem:
                 bad(md, f"name {fm.get('name')!r} must be the file name {md.stem!r}")
+    skills = {s.name for s in (folder / "skills").glob("*/")} if (folder / "skills").is_dir() else set()
+    for md in sorted((folder / "commands").glob("*.md")) if (folder / "commands").is_dir() else []:
+        if md.stem in skills:
+            bad(md, f"a command and a skill are both called {md.stem!r} (commands are skills too)")
     mcp = folder / ".mcp.json"
     if mcp.is_file():
         data = load_json(mcp)

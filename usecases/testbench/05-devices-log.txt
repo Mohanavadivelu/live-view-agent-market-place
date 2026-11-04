@@ -1,4 +1,5 @@
 # My devices, and nothing wrong in the log
+project: lv-testbench
 launch LV Test Bench
 tap "My devices"
 expect: the list shows "24 devices"

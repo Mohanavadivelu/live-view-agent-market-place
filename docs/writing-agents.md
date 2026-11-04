@@ -15,6 +15,15 @@ The Copilot format is generated from it (stage S8).
 The `description` is what the tool matches requests against. It says what the thing does **and
 when to use it**. `python scripts/validate.py` checks all of this. CI runs it.
 
+- **A command is a skill too.** `/run-usecase` and a skill called `run-usecase` in the same plugin
+  clash, so the skill is `run-procedure`.
+- **Agents preload skills** with `skills:` in their frontmatter, by plugin-qualified name
+  (`usecase-runner:run-procedure`, `live-view-mcp:device-safety`). VS Code may ignore it, so the
+  agent's text also says which skills to load.
+- **Dependencies:** `"dependencies": ["live-view-mcp"]` in plugin.json installs and enables
+  live-view-mcp with the plugin (`+ 1 dependency`).
+- **Scripts** live in a skill's folder and are called as `python "${CLAUDE_SKILL_DIR}/scripts/<x>.py"`.
+
 ## appium-mcp's tools: name them by their short name
 
 appium-mcp is connected once, by live-view-mcp's `.mcp.json` (server `appium`,
@@ -39,6 +48,18 @@ no other plugin has one).
 
 A project that already connects appium-mcp itself (adb-remote's `.mcp.json`) gets the tools twice,
 under both names. That is harmless: both reach the same server.
+
+## Unattended agents and permissions
+
+An agent that runs unattended (usecase-runner) does all its shell work through one script
+(`runkit.py`), one plain call at a time, for these reasons:
+
+- **Prefix rules can't cover chains.** `a && b`, `X=1 adb …`, and `cp` or `Copy-Item` out of
+  appium-mcp's work folder (outside the workspace) each need their own approval.
+- **One rule then covers everything:** `Bash(python *runkit.py*)` (and the same for PowerShell),
+  next to `mcp__plugin_live-view-mcp_appium`.
+- **The script checks its own input.** For example, `seq` accepts only taps, swipes, keys and
+  waits.
 
 ## The two gates
 

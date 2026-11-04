@@ -1,4 +1,5 @@
 # Settings on a fresh install
+project: lv-testbench
 clear the app's data
 launch the settings screen
 expect: no error dialog
