@@ -5,7 +5,7 @@ Agents and skills that test Android use cases through **appium-mcp** (from
 find the issue in the logs and the code, fix it, build, **adb push** it to the device and verify it.
 Installable as plugins in **Claude Code**, **VS Code** (Copilot chat) and **Copilot CLI / the Copilot app**.
 
-Status: planning. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
+Status: S0 done (the skeleton installs in Claude Code); S1 next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
 
 ## Decisions so far
 
@@ -74,12 +74,12 @@ runs/                 run folders (git-ignored)
 
 The repo installs as a marketplace in each tool, with empty plugins.
 
-- [ ] `.claude-plugin/marketplace.json` listing the six plugins
-- [ ] each plugin: `.claude-plugin/plugin.json` (name, version, description), empty `agents/` `skills/`
-- [ ] `scripts/validate.py`: manifests parse, versions match, skill names = folder names, frontmatter present
-- [ ] `.github/workflows/validate.yml`
-- [ ] `README.md` (what's in it, the plugins table, install for each tool), `CHANGELOG.md`, `.gitignore` (`runs/`, `eval/results/`)
-- [ ] `docs/install-claude-code.md`, `docs/install-vscode.md`
+- [x] `.claude-plugin/marketplace.json` listing the six plugins
+- [x] each plugin: `.claude-plugin/plugin.json` (name, version, description), empty `agents/` `skills/`
+- [x] `scripts/validate.py`: manifests parse, versions match, skill names = folder names, frontmatter present
+- [x] `.github/workflows/validate.yml`
+- [x] `README.md` (what's in it, the plugins table, install for each tool), `CHANGELOG.md`, `.gitignore` (`runs/`, `eval/results/`)
+- [x] `docs/install-claude-code.md`, `docs/install-vscode.md`
 
 Done when: Claude Code (`/plugin marketplace add` + `/plugin install`) and VS Code (`chat.plugins.marketplaces`) both list and install the six plugins.
 

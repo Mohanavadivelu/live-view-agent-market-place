@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "live-view-mcp",
+  "version": "0.0.1",
+  "description": "Connects to appium-mcp (live-view-app → Tools → appium-mcp) and checks the setup: device, Appium, adb root.",
+  "author": {
+    "name": "Mohana Vadivelu"
+  },
+  "homepage": "https://github.com/Mohanavadivelu/live-view-agent-market-place",
+  "repository": "https://github.com/Mohanavadivelu/live-view-agent-market-place",
+  "keywords": [
+    "setup",
+    "mcp",
+    "android"
+  ]
+}

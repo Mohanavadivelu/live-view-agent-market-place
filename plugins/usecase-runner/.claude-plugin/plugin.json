@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "usecase-runner",
+  "version": "0.0.1",
+  "description": "Runs a plain-text use case (\"disable BT / launch pairing screen\") on the device, recording logcat and the screen.",
+  "author": {
+    "name": "Mohana Vadivelu"
+  },
+  "homepage": "https://github.com/Mohanavadivelu/live-view-agent-market-place",
+  "repository": "https://github.com/Mohanavadivelu/live-view-agent-market-place",
+  "keywords": [
+    "testing",
+    "android",
+    "appium"
+  ]
+}

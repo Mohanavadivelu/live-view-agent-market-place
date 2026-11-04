@@ -1,0 +1,99 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "live-view-agents",
+  "owner": {
+    "name": "Mohana Vadivelu"
+  },
+  "metadata": {
+    "description": "Agents and skills that run Android use cases through appium-mcp, find the issue in the logs and the code, fix it, adb push it and verify it. For Claude Code, VS Code (Copilot chat) and Copilot.",
+    "version": "0.0.1"
+  },
+  "plugins": [
+    {
+      "name": "live-view-mcp",
+      "source": "./plugins/live-view-mcp",
+      "description": "Connects to appium-mcp (live-view-app → Tools → appium-mcp) and checks the setup: device, Appium, adb root.",
+      "version": "0.0.1",
+      "author": {
+        "name": "Mohana Vadivelu"
+      },
+      "keywords": [
+        "setup",
+        "mcp",
+        "android"
+      ]
+    },
+    {
+      "name": "usecase-runner",
+      "source": "./plugins/usecase-runner",
+      "description": "Runs a plain-text use case (\"disable BT / launch pairing screen\") on the device, recording logcat and the screen.",
+      "version": "0.0.1",
+      "author": {
+        "name": "Mohana Vadivelu"
+      },
+      "keywords": [
+        "testing",
+        "android",
+        "appium"
+      ]
+    },
+    {
+      "name": "log-triage",
+      "source": "./plugins/log-triage",
+      "description": "Reads a run's logcat, crashes and ANRs: what failed, what kind of failure, and whose code it is.",
+      "version": "0.0.1",
+      "author": {
+        "name": "Mohana Vadivelu"
+      },
+      "keywords": [
+        "logcat",
+        "crash",
+        "anr",
+        "android"
+      ]
+    },
+    {
+      "name": "code-fix",
+      "source": "./plugins/code-fix",
+      "description": "Finds the root cause in the source (file:line), proposes a fix and, after your approval, applies it.",
+      "version": "0.0.1",
+      "author": {
+        "name": "Mohana Vadivelu"
+      },
+      "keywords": [
+        "debugging",
+        "fix",
+        "android"
+      ]
+    },
+    {
+      "name": "build-push",
+      "source": "./plugins/build-push",
+      "description": "Builds the changed module and, after your approval, adb pushes it to the device, restarts it and can roll back.",
+      "version": "0.0.1",
+      "author": {
+        "name": "Mohana Vadivelu"
+      },
+      "keywords": [
+        "build",
+        "adb",
+        "deploy",
+        "android"
+      ]
+    },
+    {
+      "name": "fix-loop",
+      "source": "./plugins/fix-loop",
+      "description": "The whole loop: run the use case, triage, fix (Gate 1), build, push (Gate 2), verify, report.",
+      "version": "0.0.1",
+      "author": {
+        "name": "Mohana Vadivelu"
+      },
+      "keywords": [
+        "automation",
+        "testing",
+        "android"
+      ]
+    }
+  ]
+}
