@@ -1,0 +1,5 @@
+# My devices, and nothing wrong in the log
+launch LV Test Bench
+tap "My devices"
+expect: the list shows "24 devices"
+expect: no errors from the app in the log

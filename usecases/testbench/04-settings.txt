@@ -1,0 +1,5 @@
+# Settings on a fresh install
+clear the app's data
+launch the settings screen
+expect: no error dialog
+expect: the scan timeout shows 12

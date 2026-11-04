@@ -1,0 +1,4 @@
+# The pairing screen's title
+enable BT
+launch the pairing screen
+expect: the title is "Pair new device"

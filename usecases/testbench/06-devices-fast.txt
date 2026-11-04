@@ -1,0 +1,4 @@
+# My devices shows quickly
+launch LV Test Bench
+tap "My devices"
+expect: within 2 s the list shows "24 devices"

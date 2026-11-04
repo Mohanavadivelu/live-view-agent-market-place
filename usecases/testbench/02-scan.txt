@@ -1,0 +1,8 @@
+# Scanning for devices nearby
+enable BT
+launch the pairing screen
+tap "Scan"
+wait 2 s
+tap "Scan"
+expect: the app stays responsive: no "isn't responding" dialog and no "ANR in" for the app in the log
+expect: within 15 s the status shows "Found Pixel Buds Pro"

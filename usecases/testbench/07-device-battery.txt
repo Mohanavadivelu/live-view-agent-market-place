@@ -1,0 +1,7 @@
+# A device's battery level (run it 5 times: it doesn't fail every time)
+launch LV Test Bench
+tap "My devices"
+wait until the list shows "24 devices"
+tap "Pixel Buds Pro"
+expect: the name is "Pixel Buds Pro"
+expect: the battery shows "82 %"

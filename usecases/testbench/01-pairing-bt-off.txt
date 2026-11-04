@@ -1,0 +1,6 @@
+# Pairing with Bluetooth off
+disable BT
+launch LV Test Bench
+tap "Pair a device"
+expect: the pairing screen opens and says there is no Bluetooth to scan with
+expect: the app is still running

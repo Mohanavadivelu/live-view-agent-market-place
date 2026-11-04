@@ -5,7 +5,7 @@ Agents and skills that test Android use cases through **appium-mcp** (from
 find the issue in the logs and the code, fix it, build, **adb push** it to the device and verify it.
 Installable as plugins in **Claude Code**, **VS Code** (Copilot chat) and **Copilot CLI / the Copilot app**.
 
-Status: S0 and S1 done; S2 (the test bench) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
+Status: S0, S1 and S2 done; S3 (usecase-runner) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
 
 ## Decisions so far
 
@@ -95,14 +95,29 @@ Done when: `/check-setup` reports the emulator and appium-mcp correctly in Claud
 
 ### S2. Test bench (the target to prove the loop on)
 
-- [ ] `testbench/`: LV Test Bench (Kotlin, Views, minSdk 30): Home, Pairing, Devices, Device details, Settings
-- [ ] the 7 planted bugs: crash on Pairing with BT off, ANR on Scan, wrong string, error dialog, log-only, slow list, flaky race
-- [ ] `usecases/testbench/*.txt`: one plain-text use case per bug
-- [ ] `projects/lv-testbench.json`: build `gradlew :app:assembleDebug`, push mode `data` (push + `pm install`)
-- [ ] `eval/answers/testbench.json`: per bug the class, owner, file:line, the fix
-- [ ] `testbench/reset-bugs.ps1`
+- [x] `testbench/`: LV Test Bench (Kotlin, Views, minSdk 30): Home, Pairing, Devices, Device details, Settings
+- [x] the 7 planted bugs: crash on Pairing with BT off, ANR on Scan, wrong string, error dialog, log-only, slow list, flaky race
+- [x] `usecases/testbench/*.txt`: one plain-text use case per bug
+- [x] `projects/lv-testbench.json`: build `gradlew :app:assembleDebug`, push mode `data` (push + `pm install`)
+- [x] `eval/answers/testbench.json`: per bug the class, owner, file:line, the fix
+- [x] `testbench/reset-bugs.ps1`
 
 Done when: it builds, installs with the data push, and each use case shows its bug when done by hand through appium-mcp.
+
+Found while building it (for the later stages):
+
+- **S3:** Appium waits for the app to be idle before each action, so a second tap during a frozen
+  main thread arrives late. The ANR still happens (input dispatching timed out), but on this
+  emulator **no "isn't responding" dialog shows**: ANRs are found in the log (`ANR in`) and
+  `adb_crashes`, not on screen.
+- **S3:** "disable BT" = `cmd bluetooth_manager disable` (needs `ADB_SHELL_MODE=full`, or adb from the
+  terminal); `adb_shell` in safe mode refuses some quoting (`grep -E "a|b"`).
+- **S3/S4:** My devices logs `I/Devices: Loading the devices` and `Showing 24 devices after N ms`:
+  timing comes from the log, not from polling the screen.
+- **S6:** Git Bash rewrites device paths (`/data/local/tmp/…` → `C:/Program Files/Git/data/…`):
+  run adb with `MSYS_NO_PATHCONV=1`, or from PowerShell.
+- The build needs the network once (Gradle downloads aapt2 for AGP 9.4.1); JDK: Android Studio's
+  `jbr` (JDK 25) through `JAVA_HOME`.
 
 ### S3. usecase-runner: run a plain-text use case
 
@@ -169,5 +184,5 @@ Done when: Copilot CLI installs the plugins from `copilot/` and `/run-usecase` (
 - [x] The name of plugin MCP tools: Claude Code `mcp__plugin_live-view-mcp_appium__<tool>` (see docs/writing-agents.md). VS Code's is still to check.
 - [ ] The Copilot marketplace manifest path (GitHub's docs don't name it yet) (S8).
 - [ ] May S6 download the Google APIs x86_64 system image (~1.5 GB) and create a second emulator for system push?
-- [ ] Which JDK builds the test bench (no `java` on PATH; Android Studio's bundled JDK by default)?
+- [x] The JDK for the test bench: Android Studio's `jbr` through `JAVA_HOME` (already set).
 - [ ] A first real project for `projects/` after the test bench (which product, its source root, build command, push paths)?

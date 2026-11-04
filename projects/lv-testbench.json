@@ -1,0 +1,33 @@
+{
+  "name": "lv-testbench",
+  "description": "LV Test Bench, the Android app with planted bugs that the agents are proven on",
+  "source_roots": ["testbench/app/src/main"],
+  "tests": "testbench/app/src/test",
+  "app": {
+    "package": "dev.liveview.testbench",
+    "launch": "dev.liveview.testbench/.HomeActivity",
+    "screens": {
+      "pairing": "dev.liveview.testbench/.PairingActivity",
+      "devices": "dev.liveview.testbench/.DevicesActivity",
+      "settings": "dev.liveview.testbench/.SettingsActivity"
+    }
+  },
+  "build": {
+    "cwd": "testbench",
+    "command": "gradlew.bat --offline :app:assembleDebug",
+    "test": "gradlew.bat --offline :app:testDebugUnitTest",
+    "env": { "JAVA_HOME": "C:\Program Files\Android\Android Studio\jbr" }
+  },
+  "push": {
+    "mode": "data",
+    "files": [
+      {
+        "local": "testbench/app/build/outputs/apk/debug/app-debug.apk",
+        "device": "/data/local/tmp/lv-testbench.apk"
+      }
+    ],
+    "install": "pm install -r -t /data/local/tmp/lv-testbench.apk",
+    "restart": "am force-stop dev.liveview.testbench"
+  },
+  "device": { "serial": "emulator-5554" }
+}

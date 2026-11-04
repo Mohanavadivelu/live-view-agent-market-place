@@ -20,3 +20,12 @@ All notable changes to the live-view-agents marketplace are documented here. The
   a push, one run per device, leave it as found). `docs/writing-agents.md`: the files, how
   appium-mcp's tools are named and why agents use their short names, trying a plugin with
   `--plugin-dir`.
+- S2, the test bench: **LV Test Bench** (`testbench/`, Kotlin, framework Views, minSdk 30, no
+  libraries): Home, Pairing, My devices, a device's details, Settings, with seven planted bugs
+  (a crash with Bluetooth off, an ANR on Scan, a wrong string, an error dialog, errors only in the
+  log, a slow list, a race that fails about half the time) and three unit tests. One plain-text use
+  case per bug in `usecases/testbench/`; `projects/lv-testbench.json` (build with Gradle, data push:
+  `adb push` + `pm install`); the answer key `eval/answers/testbench.json`, written by
+  `eval/make_answers.py` from the code; `testbench/reset-bugs.ps1`. Each use case was done by hand
+  through appium-mcp on the Android 17 emulator and showed its bug.
+

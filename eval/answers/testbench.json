@@ -1,0 +1,82 @@
+{
+  "project": "lv-testbench",
+  "owner": "dev.liveview.testbench",
+  "bugs": [
+    {
+      "id": "B1",
+      "usecase": "usecases/testbench/01-pairing-bt-off.txt",
+      "class": "crash",
+      "signature": "java.lang.NullPointerException at PairingActivity.onResume",
+      "file": "testbench/app/src/main/java/dev/liveview/testbench/PairingActivity.kt",
+      "cause": "NearbyScanner.create() returns null when Bluetooth is off; onResume uses it with !!.",
+      "fix": "Handle the null scanner: say Bluetooth is off (and disable Scan) instead of starting it.",
+      "line": 30
+    },
+    {
+      "id": "B2",
+      "usecase": "usecases/testbench/02-scan.txt",
+      "class": "anr",
+      "signature": "ANR in dev.liveview.testbench (Input dispatching timed out)",
+      "file": "testbench/app/src/main/java/dev/liveview/testbench/data/NearbyScanner.kt",
+      "cause": "scanNow() blocks up to 12 s waiting for the full scan, and PairingActivity calls it on the main thread.",
+      "fix": "Run the full scan off the main thread (a callback or a thread in scan()) and post the result.",
+      "line": 44,
+      "also": [
+        {
+          "file": "testbench/app/src/main/java/dev/liveview/testbench/PairingActivity.kt",
+          "line": 40
+        }
+      ]
+    },
+    {
+      "id": "B3",
+      "usecase": "usecases/testbench/03-pairing-title.txt",
+      "class": "wrong-screen",
+      "signature": "the title reads \"Pair new devcie\"",
+      "file": "testbench/app/src/main/res/values/strings.xml",
+      "cause": "A typo in the string resource.",
+      "fix": "pairing_title = \"Pair new device\".",
+      "line": 13
+    },
+    {
+      "id": "B4",
+      "usecase": "usecases/testbench/04-settings.txt",
+      "class": "error-dialog",
+      "signature": "E/Settings: Couldn't load the settings, java.lang.NumberFormatException: For input string: \"12s\"",
+      "file": "testbench/app/src/main/java/dev/liveview/testbench/data/SettingsStore.kt",
+      "cause": "Durations are stored as \"12s\" (the default and save()), but parseSeconds() expects a plain number.",
+      "fix": "parseSeconds() drops the trailing \"s\" (value.trim().removeSuffix(\"s\").toInt()); a unit test for \"12s\".",
+      "line": 26
+    },
+    {
+      "id": "B5",
+      "usecase": "usecases/testbench/05-devices-log.txt",
+      "class": "log-only",
+      "signature": "E/DeviceRepository: Couldn't open the icon for …, java.io.FileNotFoundException: …/filesicons/….png",
+      "file": "testbench/app/src/main/java/dev/liveview/testbench/data/DeviceRepository.kt",
+      "cause": "The icon folder's path is built without a separator (files + icons = filesicons); IconCache writes them to files/icons.",
+      "fix": "File(context.filesDir, \"icons\").",
+      "line": 29
+    },
+    {
+      "id": "B6",
+      "usecase": "usecases/testbench/06-devices-fast.txt",
+      "class": "slow",
+      "signature": "I/Devices: Showing 24 devices after about 5000 ms (the use case allows 2 s)",
+      "file": "testbench/app/src/main/java/dev/liveview/testbench/data/DeviceRepository.kt",
+      "cause": "The comparator measures both devices' signal (30 ms each) on every comparison: about 100 comparisons.",
+      "fix": "Measure each device once, then sort: all().map { it to signalStrength(it) }.sortedByDescending { it.second }.map { it.first }.",
+      "line": 18
+    },
+    {
+      "id": "B7",
+      "usecase": "usecases/testbench/07-device-battery.txt",
+      "class": "flaky",
+      "signature": "about half the runs show \"Battery: —\"",
+      "file": "testbench/app/src/main/java/dev/liveview/testbench/DeviceDetailsActivity.kt",
+      "cause": "The name thread copies `details` before its wait and writes the copy back after it, losing a battery level written meanwhile.",
+      "fix": "Read and update `details` together after the wait, under a lock or on the main thread (runOnUiThread { details = details.copy(...) }).",
+      "line": 26
+    }
+  ]
+}
