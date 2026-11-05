@@ -49,4 +49,12 @@ All notable changes to the live-view-agents marketplace are documented here. The
   and log-triage with it). Use cases can say `repeat: N`; device.json records the app's install
   time; `runkit since`. `eval/score.py` scores triage against the answer key: 7/7 on the test
   bench.
+- S5, code-fix 0.0.2 (installs log-triage with it): **/fix-run** takes a triaged run through the
+  **code-investigator** agent (the root cause's file:line and the smallest fix, changing no source),
+  **Gate 1** (Apply, Change or Stop) and the **fixer** agent (applies exactly the approved change,
+  builds, runs the unit tests, undoes it if they fail). Skills **stack-to-source** with
+  **sourcekit.py** and **fix-proposal** with **fixkit.py** (propose, apply, undo, build, diff).
+  `projects/schema.json`, and `validate.py` checks projects against it. `eval/score.py` also scores
+  the root cause and the build: 7/7 and 7/7 on the test bench. log-triage 0.0.3 and fix-loop 0.0.3:
+  their skills' examples no longer come from the test bench's planted bugs.
 

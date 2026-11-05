@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "A project config: how the agents find, build and push a project's code",
+  "type": "object",
+  "required": ["name", "source_roots", "app"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"type": "string"},
+    "name": {"type": "string", "description": "the file's name without .json; use cases name it with project: <name>"},
+    "description": {"type": "string"},
+    "source_roots": {"type": "array", "items": {"type": "string"}, "description": "folders with the code the agents may read and change, from the workspace root"},
+    "tests": {"type": "string", "description": "the folder with the unit tests, from the workspace root"},
+    "app": {
+      "type": "object",
+      "required": ["package"],
+      "additionalProperties": false,
+      "properties": {
+        "package": {"type": "string"},
+        "launch": {"type": "string", "description": "package/.Activity opened by \"launch <app>\""},
+        "screens": {"type": "object", "additionalProperties": {"type": "string"}, "description": "name -> package/.Activity, for \"launch the <name> screen\""}
+      }
+    },
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "what counts as our code in a log (default: the app's package)",
+      "properties": {
+        "packages": {"type": "array", "items": {"type": "string"}, "description": "Java/Kotlin package prefixes"},
+        "processes": {"type": "array", "items": {"type": "string"}, "description": "process names"}
+      }
+    },
+    "build": {
+      "type": "object",
+      "required": ["command"],
+      "additionalProperties": false,
+      "properties": {
+        "cwd": {"type": "string", "description": "where the commands run, from the workspace root"},
+        "command": {"type": "string", "description": "builds what gets pushed"},
+        "test": {"type": "string", "description": "runs the unit tests"},
+        "env": {"type": "object", "additionalProperties": {"type": "string"}},
+        "timeout_s": {"type": "integer"}
+      }
+    },
+    "push": {
+      "type": "object",
+      "required": ["mode", "files"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {"enum": ["data", "system"], "description": "data: push and install as an app; system: adb root, remount, push to the system image"},
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["local", "device"],
+            "additionalProperties": false,
+            "properties": {
+              "local": {"type": "string"},
+              "device": {"type": "string"},
+              "mode": {"type": "string", "description": "chmod, such as 644"},
+              "owner": {"type": "string", "description": "chown, such as root:root"}
+            }
+          }
+        },
+        "install": {"type": "string", "description": "a shell command run on the device after the push"},
+        "restart": {"type": "string", "description": "a shell command run on the device to restart what changed"},
+        "reboot": {"type": "boolean", "description": "reboot after the push instead of restart"}
+      }
+    },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "serial": {"type": "string"}
+      }
+    }
+  }
+}

@@ -41,7 +41,7 @@
       "name": "log-triage",
       "source": "./plugins/log-triage",
       "description": "Reads a run's logcat, crashes and ANRs: what failed, what kind of failure, and whose code it is.",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "author": {
         "name": "Mohana Vadivelu"
       },
@@ -56,7 +56,7 @@
       "name": "code-fix",
       "source": "./plugins/code-fix",
       "description": "Finds the root cause in the source (file:line), proposes a fix and, after your approval, applies it.",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "author": {
         "name": "Mohana Vadivelu"
       },
@@ -85,7 +85,7 @@
       "name": "fix-loop",
       "source": "./plugins/fix-loop",
       "description": "The whole loop: run the use case, triage, fix (Gate 1), build, push (Gate 2), verify, report.",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "author": {
         "name": "Mohana Vadivelu"
       },

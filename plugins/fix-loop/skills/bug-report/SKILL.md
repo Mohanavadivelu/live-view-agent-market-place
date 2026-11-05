@@ -24,17 +24,18 @@ rest shows.
 
 | | |
 |---|---|
-| Use case | `usecases/…/01-pairing-bt-off.txt`: <its title> |
+| Use case | `usecases/notes/02-open-note.txt`: <its title> |
 | Result | fail in <k> of <n> runs |
-| Class | crash · our code (`dev.liveview.testbench`) |
+| Class | crash · our code (`com.example.notes`) |
 | Device | sdk_gphone64_x86_64, Android 17 (API 37), user build, emulator-5554 |
-| App | dev.liveview.testbench 1.0, installed <app_updated> |
+| App | com.example.notes 2.3, installed <app_updated> |
 | Run | `runs/<run>/` (<date and time>) |
 
 ## Steps to reproduce
 
-1. Disable Bluetooth.
-2. Launch the pairing screen.
+1. Add a note, and put the notes widget on the home screen.
+2. Delete the note in the app.
+3. Tap the note in the widget.
 
 The use case's action lines, as numbered steps in plain words.
 
@@ -60,8 +61,8 @@ The use case's action lines, as numbered steps in plain words.
 <From triage.json's other_findings, one line each. Leave the section out when there are none.>
 ```
 
-- **The title** says what the user sees ("The app crashes when the pairing screen opens with
-  Bluetooth off"), not the class or the exception.
+- **The title** says what the user sees ("The app crashes when a deleted note is opened from
+  the widget"), not the class or the exception.
 - **Result:** the reproduction rate from triage.json's `repro`. If the use case asks for `repeat:
   N` and fewer runs were made, say so.
 - **Class:** the class and whose code: "our code (package)", "not ours: <process>" or "owner

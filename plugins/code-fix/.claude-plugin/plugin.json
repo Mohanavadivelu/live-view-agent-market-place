@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "code-fix",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Finds the root cause in the source (file:line), proposes a fix and, after your approval, applies it.",
   "author": {
     "name": "Mohana Vadivelu"
@@ -12,5 +12,8 @@
     "debugging",
     "fix",
     "android"
+  ],
+  "dependencies": [
+    "log-triage"
   ]
 }

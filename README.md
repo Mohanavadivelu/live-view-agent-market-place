@@ -5,9 +5,10 @@ Agents and skills that run Android use cases on a device through
 logs and the code, fix it, **adb push** it to the device and verify it. One marketplace for **Claude
 Code**, **VS Code** (Copilot chat agent plugins) and, from stage S8, **Copilot CLI / the Copilot app**.
 
-> **Status: S0–S4 done.** A use case runs unattended on the device, and `/report-usecase` triages
-> what broke and writes a bug report. Fixing (S5), pushing (S6) and the whole loop (S7) are next. The
-> plan and the stages are in [PLAN.md](PLAN.md).
+> **Status: S0–S5 done.** A use case runs unattended on the device, `/report-usecase` triages what
+> broke and writes a bug report, and `/fix-run` finds the root cause, asks you (Gate 1), applies the
+> fix and builds it. Pushing (S6) and the whole loop (S7) are next. The plan and the stages are in
+> [PLAN.md](PLAN.md).
 
 ## Plugins
 

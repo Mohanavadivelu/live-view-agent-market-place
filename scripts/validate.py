@@ -9,6 +9,7 @@ What it checks (the parts every tool relies on):
 - skills/<name>/SKILL.md: frontmatter with name (= the folder name, kebab-case) and description
 - agents/*.md and commands/*.md: frontmatter with a description (agents: a name = the file name)
 - .mcp.json, if present, parses and has mcpServers
+- projects/*.json follow projects/schema.json (the subset of JSON Schema it uses)
 """
 
 import json
@@ -96,6 +97,49 @@ def check_plugin(folder: Path, listed: dict) -> None:
             bad(mcp, "no mcpServers object")
 
 
+def check_schema(value, schema: dict, where: str, path: str = "") -> None:
+    """The parts of JSON Schema that projects/schema.json uses: type, enum, required, properties,
+    additionalProperties and items."""
+    here = path or "(top)"
+    kind = schema.get("type")
+    types = {"object": dict, "array": list, "string": str, "integer": int, "boolean": bool}
+    if kind and not isinstance(value, types[kind]) or kind == "integer" and isinstance(value, bool):
+        return bad(where, f"{here} must be {'an' if kind[0] in 'aeiou' else 'a'} {kind}")
+    if "enum" in schema and value not in schema["enum"]:
+        return bad(where, f"{here} must be one of {', '.join(map(str, schema['enum']))}")
+    if isinstance(value, dict):
+        props = schema.get("properties", {})
+        for key in schema.get("required", []):
+            if key not in value:
+                bad(where, f"{here}: no {key}")
+        extra = schema.get("additionalProperties", True)
+        for key, item in value.items():
+            if key in props:
+                check_schema(item, props[key], where, f"{path}.{key}" if path else key)
+            elif extra is False:
+                bad(where, f"{here}: unknown field {key!r}")
+            elif isinstance(extra, dict):
+                check_schema(item, extra, where, f"{path}.{key}" if path else key)
+    if isinstance(value, list) and "items" in schema:
+        for i, item in enumerate(value):
+            check_schema(item, schema["items"], where, f"{here}[{i}]")
+
+
+def check_projects() -> None:
+    schema = load_json(ROOT / "projects" / "schema.json")
+    if schema is None:
+        return
+    for path in sorted((ROOT / "projects").glob("*.json")):
+        if path.name == "schema.json":
+            continue
+        data = load_json(path)
+        if data is None:
+            continue
+        check_schema(data, schema, f"projects/{path.name}")
+        if data.get("name") != path.stem:
+            bad(path, f"name {data.get('name')!r} must be the file's name, {path.stem!r}")
+
+
 def main() -> int:
     catalog_path = ROOT / ".claude-plugin" / "marketplace.json"
     catalog = load_json(catalog_path)
@@ -120,6 +164,7 @@ def main() -> int:
     for folder in sorted((ROOT / "plugins").glob("*/")):
         if folder.name not in seen:
             bad(folder, "not in .claude-plugin/marketplace.json")
+    check_projects()
     return report(len(seen))
 
 

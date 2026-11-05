@@ -5,7 +5,7 @@ Agents and skills that test Android use cases through **appium-mcp** (from
 find the issue in the logs and the code, fix it, build, **adb push** it to the device and verify it.
 Installable as plugins in **Claude Code**, **VS Code** (Copilot chat) and **Copilot CLI / the Copilot app**.
 
-Status: S0–S4 done; S5 (code-fix) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
+Status: S0–S5 done; S6 (build-push) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
 
 ## Decisions so far
 
@@ -54,7 +54,7 @@ plugins/
   live-view-mcp/      appium-mcp connection (.mcp.json), env-doctor, device-safety, /check-setup
   usecase-runner/     usecase-runner, usecase-format, run-procedure, /run-usecase
   log-triage/         log-triage, logcat-triage
-  code-fix/           code-investigator (read-only), fixer, stack-to-source
+  code-fix/           code-investigator (read-only), fixer, stack-to-source, fix-proposal, /fix-run
   build-push/         builder, pusher, project-config, build-module, adb-push-deploy
   fix-loop/           orchestrator, verifier, reporter, verify-fix, bug-report, /fix-usecase
 copilot/              GENERATED: the Copilot format of the same plugins
@@ -171,13 +171,32 @@ Found while building it:
 
 ### S5. code-fix: root cause and Gate 1
 
-- [ ] `projects/schema.json`: source roots, build, push, restart, device (shared with S6)
-- [ ] `skills/stack-to-source/SKILL.md`: Java/Kotlin frames → file:line, tag → class by grep, R8 retrace, native via `addr2line`/`ndk-stack`, AOSP module via `module-info.json`
-- [ ] `agents/code-investigator.md` (read-only): root cause + proposed diff → asks **Gate 1**
-- [ ] `agents/fixer.md`: applies the approved diff, adds a unit test where the module has tests
-- [ ] score: right file:line, the fix compiles
+- [x] `projects/schema.json`: source roots, build, push, restart, device (shared with S6)
+- [x] `skills/stack-to-source/SKILL.md`: Java/Kotlin frames → file:line, tag → class by grep, R8 retrace, native via `addr2line`/`ndk-stack`, AOSP module via `module-info.json`
+- [x] `agents/code-investigator.md` (read-only): root cause + proposed diff → asks **Gate 1**
+- [x] `agents/fixer.md`: applies the approved diff, adds a unit test where the module has tests
+- [x] score: right file:line, the fix compiles
 
 Done when: for the test bench bugs the investigator points at the right file:line and, after Gate 1, the fixer's change builds.
+- [x] `skills/fix-proposal/SKILL.md` + `scripts/fixkit.py` (propose, apply, undo, build, diff), `skills/stack-to-source/scripts/sourcekit.py` (resolve), `commands/fix-run.md`: investigate, Gate 1, apply, build, test
+
+Found while building it:
+
+- A subagent can't ask the user, so the command asks Gate 1. A run with nobody to answer stops at
+  the gate, and the fixer stops when it isn't told that the user approved.
+- The change is `fix.json` (exact replacements), and `fix.diff` is rendered from it, so a diff can't
+  be hand-written wrong. `apply` refuses a fix.json that no longer makes the diff that was shown.
+- My first skill text used the test bench's own bugs as examples, and the first proposal for B4
+  simply copied its example. The examples in every skill are now from a made-up notes app. The test
+  bench score is still a best case, because the same person planted the bugs and wrote the skills:
+  **the first real project is the real test.**
+- Windows may not look in the current folder for a command (`NoDefaultCurrentDirectoryInExePath`), so
+  fixkit runs the project's `gradlew.bat` by its full path.
+- Result: `eval/score.py` gives root cause 7/7 and builds 7/7. The new unit tests (B4, B6) fail
+  without their fix. **A green build doesn't show the bug is gone:** that is the verifier's job (S7).
+  For the eval, the Apply was given in the prompt, and each change was undone afterwards. The live
+  question (AskUserQuestion, Change, a failed build going back through the gate) still needs a
+  person to try it. An investigation costs about $0.6–1.2, and a fixer about $0.4.
 
 ### S6. build-push: build, Gate 2, adb push
 

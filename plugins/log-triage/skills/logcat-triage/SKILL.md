@@ -33,7 +33,7 @@ the files show, and saves it as `signals.json` in the run folder:
 | `owner` | the app's processes and Java packages (from the project, else the package), and the pids the app had in this log |
 | `signatures` | crash (`FATAL EXCEPTION`), anr (`ANR in`), native-crash (`Fatal signal`), tombstone (`>>> … <<<`), watchdog, process-died, low-memory-kill and dead-object, each with its time, process, `ours`, `step` (the step it happened during) and `lines` in logcat.log. A crash also has its exception chain, `root` (the last `Caused by`) and `owner_frames` (the frames in the app's packages) |
 | `app_errors` | the app's own E and F lines, grouped by tag: lines, reports, exceptions named and frames in the app's code |
-| `app_timings` | the app's lines that give a time in ms ("Showing 24 devices after 5088 ms") |
+| `app_timings` | the app's lines that give a time in ms ("Loaded 120 notes in 4300 ms") |
 | `crash_files` | each crash-<n>.txt: process, pid, subject |
 | `comparable_runs` | other runs of the same, unchanged use case on the same install of the app, with their verdicts |
 | `clock` | host time = device time + `host_minus_device_s` (the steps are on the host clock, the log on the device's) |
@@ -89,25 +89,25 @@ that is rare.
 
 Both files go into the run folder.
 
-**triage.json** (for the next agent and for scoring):
+**triage.json** (for the next agent and for scoring; the examples are from a notes app):
 
 ```json
 {
-  "run": "runs/20261104-094506-01-pairing-bt-off",
-  "usecase": "usecases/testbench/01-pairing-bt-off.txt",
+  "run": "runs/20261102-101200-02-open-note",
+  "usecase": "usecases/notes/02-open-note.txt",
   "verdict": "fail",
   "class": "crash",
   "ours": true,
-  "owner": "dev.liveview.testbench",
-  "summary": "The app crashes when the pairing screen opens with Bluetooth off: NullPointerException in PairingActivity.onResume.",
-  "failed_step": {"n": 3, "line": "launch the pairing screen"},
-  "signature": "java.lang.NullPointerException at dev.liveview.testbench.PairingActivity.onResume(PairingActivity.kt:30)",
-  "frames": ["dev.liveview.testbench.PairingActivity.onResume(PairingActivity.kt:30)"],
+  "owner": "com.example.notes",
+  "summary": "The app crashes when a note is opened from the widget after it was deleted: NoSuchElementException in NoteRepository.find.",
+  "failed_step": {"n": 4, "line": "tap the widget's first note"},
+  "signature": "java.util.NoSuchElementException at com.example.notes.data.NoteRepository.find(NoteRepository.kt:41)",
+  "frames": ["com.example.notes.data.NoteRepository.find(NoteRepository.kt:41)", "com.example.notes.EditorActivity.onCreate(EditorActivity.kt:33)"],
   "repro": {"failed": 1, "runs": 1, "compared": []},
   "evidence": [
-    {"file": "logcat.log", "lines": "1636-1668", "what": "FATAL EXCEPTION in dev.liveview.testbench"},
+    {"file": "logcat.log", "lines": "1412-1440", "what": "FATAL EXCEPTION in com.example.notes"},
     {"file": "crash-1.txt", "what": "the crash report"},
-    {"file": "03-tap-pair-a-device.png", "what": "the launcher after the crash"}
+    {"file": "04-tap-first-note.png", "what": "the launcher after the crash"}
   ],
   "other_findings": [],
   "confidence": "high"
@@ -133,8 +133,8 @@ Both files go into the run folder.
 | | |
 |---|---|
 | Run | runs/… (verdict, mode) |
-| Failed step | 3. launch the pairing screen |
-| Class | crash (ours: dev.liveview.testbench) |
+| Failed step | 4. tap the widget's first note |
+| Class | crash (ours: com.example.notes) |
 | Reproduced | 1 of 1 runs |
 
 ## Evidence

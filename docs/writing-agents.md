@@ -68,7 +68,9 @@ An agent that runs unattended (usecase-runner) does all its shell work through o
 ## The two gates
 
 An agent that changes code asks first (Gate 1), and an agent that pushes to a device asks again
-(Gate 2). See [PLAN.md](../PLAN.md#the-loop). A gate shows what will happen and waits for a yes. It
+(Gate 2). A subagent can't ask the user, so the **command** that runs the agents asks the gate
+(`/fix-run`: investigator, then Gate 1, then fixer). What is approved is a file in the run folder
+(`fix.diff`), and the script that applies it refuses anything else. See [PLAN.md](../PLAN.md#the-loop). A gate shows what will happen and waits for a yes. It
 never assumes one from an earlier answer. The device rules are in the `device-safety` skill.
 
 ## Trying a plugin without installing it
