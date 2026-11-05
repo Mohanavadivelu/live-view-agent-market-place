@@ -57,4 +57,14 @@ All notable changes to the live-view-agents marketplace are documented here. The
   `projects/schema.json`, and `validate.py` checks projects against it. `eval/score.py` also scores
   the root cause and the build: 7/7 and 7/7 on the test bench. log-triage 0.0.3 and fix-loop 0.0.3:
   their skills' examples no longer come from the test bench's planted bugs.
+- S6, build-push 0.0.2 (installs live-view-mcp with it): **/push-run** takes a run through the
+  **builder** agent (builds, lists each file with its device path and sha256, writes the plan),
+  **Gate 2** (Push, Push and reboot, or Stop) and the **pusher** agent (backup, adb push, checksum on
+  the device, restart, wait for the device, and a rollback by itself if a step fails).
+  **/rollback-run** shows what will change, asks, and puts the backup back. Skills **project-config**,
+  **build-module** with **buildkit.py**, and **adb-push-deploy** with **pushkit.py** (plan, push,
+  status, rollback). Data mode (push and install) and system mode (`adb root`, remount,
+  disable-verity and a reboot the first time, mode, owner and SELinux context).
+  `projects/example-aosp.json`, `projects/lv-testbench-system.json`, and `push.boot_timeout_s` in the
+  schema.
 

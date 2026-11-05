@@ -70,7 +70,7 @@
       "name": "build-push",
       "source": "./plugins/build-push",
       "description": "Builds the changed module and, after your approval, adb pushes it to the device, restarts it and can roll back.",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "author": {
         "name": "Mohana Vadivelu"
       },

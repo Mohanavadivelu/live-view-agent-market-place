@@ -63,7 +63,8 @@
         },
         "install": {"type": "string", "description": "a shell command run on the device after the push"},
         "restart": {"type": "string", "description": "a shell command run on the device to restart what changed"},
-        "reboot": {"type": "boolean", "description": "reboot after the push instead of restart"}
+        "reboot": {"type": "boolean", "description": "reboot after the push instead of restart"},
+        "boot_timeout_s": {"type": "integer", "description": "how long to wait for the device to come back (default 300)"}
       }
     },
     "device": {

@@ -1,0 +1,29 @@
+{
+  "name": "example-aosp",
+  "description": "An example for an AOSP tree: SystemUI built with m and pushed into the system image of a userdebug build. Copy it and change the paths",
+  "source_roots": ["frameworks/base/packages/SystemUI/src"],
+  "tests": "frameworks/base/packages/SystemUI/tests",
+  "app": {
+    "package": "com.android.systemui"
+  },
+  "owner": {
+    "packages": ["com.android.systemui"],
+    "processes": ["com.android.systemui"]
+  },
+  "build": {
+    "command": "bash -c \"source build/envsetup.sh && lunch sdk_phone64_x86_64-trunk_staging-userdebug && m SystemUI\"",
+    "timeout_s": 7200
+  },
+  "push": {
+    "mode": "system",
+    "files": [
+      {
+        "local": "out/target/product/emu64x/system_ext/priv-app/SystemUI/SystemUI.apk",
+        "device": "/system_ext/priv-app/SystemUI/SystemUI.apk",
+        "mode": "644",
+        "owner": "root:root"
+      }
+    ],
+    "restart": "stop; start"
+  }
+}

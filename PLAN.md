@@ -5,7 +5,7 @@ Agents and skills that test Android use cases through **appium-mcp** (from
 find the issue in the logs and the code, fix it, build, **adb push** it to the device and verify it.
 Installable as plugins in **Claude Code**, **VS Code** (Copilot chat) and **Copilot CLI / the Copilot app**.
 
-Status: S0–S5 done; S6 (build-push) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
+Status: S0–S6 done; S7 (fix-loop) next. Each stage below ends tested in Claude Code and VS Code, and is committed on its own.
 
 ## Decisions so far
 
@@ -55,10 +55,10 @@ plugins/
   usecase-runner/     usecase-runner, usecase-format, run-procedure, /run-usecase
   log-triage/         log-triage, logcat-triage
   code-fix/           code-investigator (read-only), fixer, stack-to-source, fix-proposal, /fix-run
-  build-push/         builder, pusher, project-config, build-module, adb-push-deploy
+  build-push/         builder, pusher, project-config, build-module, adb-push-deploy, /push-run, /rollback-run
   fix-loop/           orchestrator, verifier, reporter, verify-fix, bug-report, /fix-usecase
 copilot/              GENERATED: the Copilot format of the same plugins
-projects/             project configs: schema.json, example-aosp.json, lv-testbench.json
+projects/             project configs: schema.json, example-aosp.json, lv-testbench.json, lv-testbench-system.json
 usecases/             examples/ and testbench/ (plain text)
 testbench/            the Android test app with planted bugs
 eval/                 answer key (outside every source root), score.py, results/
@@ -200,12 +200,39 @@ Found while building it:
 
 ### S6. build-push: build, Gate 2, adb push
 
-- [ ] `skills/project-config/SKILL.md`, `projects/example-aosp.json`
-- [ ] `skills/build-module/SKILL.md` + `agents/builder.md`: build the affected module(s), list artifact → device path + checksum
-- [ ] `skills/adb-push-deploy/SKILL.md` + `agents/pusher.md`: asks **Gate 2**; `adb root`, `remount` (first time `disable-verity` + reboot), back up with `adb pull`, push, chmod/chown, checksum on the device, restart (force-stop / `stop; start` / reboot), wait for `sys.boot_completed`, roll back from the backup
-- [ ] data mode on the current emulator; system mode on a **Google APIs** emulator started with `-writable-system` (the current one is a user build: no adb root)
+- [x] `skills/project-config/SKILL.md`, `projects/example-aosp.json`
+- [x] `skills/build-module/SKILL.md` + `agents/builder.md`: build the affected module(s), list artifact → device path + checksum
+- [x] `skills/adb-push-deploy/SKILL.md` + `agents/pusher.md`: asks **Gate 2**; `adb root`, `remount` (first time `disable-verity` + reboot), back up with `adb pull`, push, chmod/chown, checksum on the device, restart (force-stop / `stop; start` / reboot), wait for the device, roll back from the backup
+- [x] data mode on the current emulator; system mode on a **Google APIs** emulator started with `-writable-system` (the current one is a user build: no adb root)
 
 Done when: a fixed test bench build is pushed in both modes, the device comes back, and a rollback restores the original files.
+- [x] `scripts/buildkit.py` (build), `scripts/pushkit.py` (plan, push, status, rollback), `commands/push-run.md` and `commands/rollback-run.md`: the command asks the gate
+
+Found while building it:
+
+- **The device is "up" later than it looks.** After `stop; start`, `sys.boot_completed` stays 1, the
+  package manager answers at about 6 s, `mBooted=true` comes at about 12 s, `/sdcard` at about 20 s,
+  and only then does an ordinary app exist (the user is unlocked; before that the screen is
+  `FallbackHome`). My first check returned at 6 s and called the device ready, with "Too early to
+  start activity" still to come. Only using the app right after the push showed it.
+- A device with a PIN never unlocks by itself, so that wait ends after 60 s without a rollback. **This
+  has not been tried on a device with a PIN.**
+- A build tool leaves a file alone when the source's content is what it last built from, so "older
+  than the source" (a fix undone and applied again) is a warning at Gate 2, not an error.
+- The plan is what is approved, like fix.diff: `push` refuses if the files, the config or the device
+  aren't the ones in it, or if the latest build failed.
+- A second push from a run keeps the first backup, so a rollback goes back to the original.
+- The worst case was tried on the throwaway emulator: a broken `services.jar` stops the framework
+  from coming back, and pushkit puts the original back by itself (same sha256, app working).
+- The rollback after that test took about 10 minutes, against about 25 s for a clean one. The likely
+  cause is the framework recompiling after services.jar's change, but that isn't confirmed.
+- The API 37 Google APIs image is 2.0 GB, so the second emulator is API 34 (1.5 GB): `LV_System`.
+- Result: data mode pushed the B3 fix to emulator-5554 and use case 03 passed on it. The rollback put
+  the original APK back byte for byte, and the app's data survived both. System mode on `LV_System`:
+  a new system app, then a replaced one with the fix showing on screen, then back to the unfixed
+  title, then removed, with mode, owner and SELinux context as they should be. For these tests the
+  yes at the gates was given in the prompt, on the test bench only. The live question and a real
+  device still need a person to try them. A builder or pusher costs about $0.3–0.5.
 
 ### S7. fix-loop: close the loop
 
@@ -230,10 +257,23 @@ Done when: Copilot CLI installs the plugins from `copilot/` and `/run-usecase` (
 - [ ] scores of the last eval run in `docs/`
 - [ ] tag `v0.1.0`
 
+## To do
+
+The stages still open are S7, S8 and S9 above. Besides those, from the stages already done:
+
+- [ ] Answer Gate 1 live in `/fix-run`: Apply, Change, and a failed build going back through the gate (S5)
+- [ ] Answer Gate 2 live in `/push-run`, and the question in `/rollback-run` (S6)
+- [ ] Push to a real device, not an emulator (S6)
+- [ ] Push to a device with a PIN: after 60 s locked, pushkit treats it as up and doesn't roll back (S6)
+- [ ] Find out why the rollback after the broken `services.jar` test took about 10 minutes, against about 25 s for a clean one (S6)
+- [ ] Try `projects/example-aosp.json` on a real AOSP tree: it has never been built or pushed (S6)
+- [ ] Make B6's unit test independent of timing: it checks that the sort takes under 2 s (S5)
+- [ ] Check the plugins in VS Code (`/check-setup`, the tool names): each stage should end tested there too, and so far only Claude Code has been tried
+
 ## Open questions
 
 - [x] The name of plugin MCP tools: Claude Code `mcp__plugin_live-view-mcp_appium__<tool>` (see docs/writing-agents.md). VS Code's is still to check.
 - [ ] The Copilot marketplace manifest path (GitHub's docs don't name it yet) (S8).
-- [ ] May S6 download the Google APIs x86_64 system image (~1.5 GB) and create a second emulator for system push?
+- [x] May S6 download the Google APIs x86_64 system image and create a second emulator for system push? Yes: API 34 (1.5 GB), emulator `LV_System`.
 - [x] The JDK for the test bench: Android Studio's `jbr` through `JAVA_HOME` (already set).
 - [ ] A first real project for `projects/` after the test bench (which product, its source root, build command, push paths)?
